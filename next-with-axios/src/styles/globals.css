@@ -3,12 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f3f4f6;
+  --foreground: #313131;
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer components {
+  /* Components Start */
+
+  .wraps {
+    @apply flex min-h-screen w-full items-center justify-center bg-slate-200;
+  }
+
+  .wrap {
+    @apply flex flex-col rounded-xl border-2 border-sky-100 bg-slate-100 px-12 py-20 shadow-[2px_2px_15px] shadow-gray-300;
+  }
+
+  .custom-table {
+    @apply w-full rounded-md border border-gray-300 *:border-b first:*:rounded-t-md last:*:rounded-b-md last:*:border-b-0;
+  }
+
+  .custom-table-row {
+    @apply grid *:flex *:items-center *:justify-center *:border-r last:*:border-r-0 hover:bg-yellow-100;
+  }
+
+  /* Components End */
+
+  /* Tag Start */
+
+  .input {
+    @apply mt-1 w-full rounded border border-gray-200 p-2 shadow shadow-gray-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-sky-500;
+  }
+
+  .link {
+    @apply cursor-pointer text-sky-500;
+  }
+
+  /* Tag End */
 }
