@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <table border="1">
+      <tr>
+        <td>ID</td>
+        <td>Name</td>
+        <td>Description</td>
+      </tr>
+    </table>
+
+    <script>
+      fetch("https://hp-api.onrender.com/api/spells")
+        .then((res) => res.json())
+        .then((res) => {
+          console.log(res);
+          res.forEach((element) => {
+            let table = document.querySelector("table");
+            let row = table.insertRow();
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
+            let cell3 = row.insertCell(2);
+            cell1.innerHTML = element.id;
+            cell2.innerHTML = element.name;
+            cell3.innerHTML = element.description;
+          });
+        });
+    </script>
+  </body>
+</html>
