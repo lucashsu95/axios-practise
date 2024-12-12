@@ -2,27 +2,22 @@ import { useEffect, useState } from "react";
 import axiosInstance from "@/lib/axios";
 
 interface ApiResponse {
-  success: boolean;
-  data: {
-    id: number;
-    name: string;
-    email: string;
-  }[];
-  message: string;
+  id: number;
+  name: string;
+  description: string;
 }
 
-export default function Home() {
-  const [data, setData] = useState<ApiResponse | null>(null);
+export default function Sec1() {
+  const [data, setData] = useState<ApiResponse[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axiosInstance.get(
+        const response = await axiosInstance.get(
           "https://hp-api.onrender.com/api/spells"
         );
-        setData(data);
-      } catch (err) {
+        setData(response.data);
+      } catch (err: unknown) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
         );
@@ -33,10 +28,24 @@ export default function Home() {
 
   if (error) return <div>Error: {error}</div>;
   if (!data) return <div>Loading...</div>;
-
   return (
-    <div>
-      <h1>Data from API</h1> <pre>{JSON.stringify(data, null, 2)}</pre>{" "}
-    </div>
+    <>
+      <table className="border border-slate-600 m-5">
+        <tbody>
+          <tr>
+            <td className="border-[5px] p-[5px] ">ID</td>
+            <td className="border-[5px] p-[5px] ">name</td>
+            <td className="border-[5px] p-[5px] ">description</td>
+          </tr>
+          {data.map((d) => (
+            <tr key={d.id}>
+              <td className="border-[5px] p-[5px] ">{d.id}</td>
+              <td className="border-[5px] p-[5px] ">{d.name}</td>
+              <td className="border-[5px] p-[5px] ">{d.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
   );
 }
