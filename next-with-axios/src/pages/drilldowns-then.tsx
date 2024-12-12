@@ -15,18 +15,20 @@ export default function Sec2() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get(
+    const fetchData = () => {
+      axiosInstance
+        .get(
           "https://datausa.io/api/data?drilldowns=Nation&measures=Population"
-        );
-        console.log(response.data);
-        setData(response.data.data);
-      } catch (err: unknown) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      }
+        )
+        .then((response) => {
+          console.log(response.data);
+          setData(response.data.data);
+        })
+        .catch((err) => {
+          setError(
+            err instanceof Error ? err.message : "An unknown error occurred"
+          );
+        });
     };
     fetchData();
   }, []);
@@ -38,6 +40,7 @@ export default function Sec2() {
         Loading...
       </div>
     );
+
   return (
     <>
       <table className="border border-slate-600 m-5">

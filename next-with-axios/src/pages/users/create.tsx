@@ -17,7 +17,12 @@ const UserPage = () => {
     email: "",
   });
 
-  if (!formData) return <div>Loading...</div>;
+  if (!formData)
+    return (
+      <div className="h-screen w-screen z-50 bg-slate-200/75 flex justify-center items-center font-bold text-xl">
+        Loading...
+      </div>
+    );
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

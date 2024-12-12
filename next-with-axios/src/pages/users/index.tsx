@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/button";
 
-interface User{
+interface User {
   id: number;
   name: string;
   email: string;
@@ -21,16 +21,16 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const res = await axiosInstance.get<ApiResponse>("users");
-        setState(res.data);
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unknown error occurred");
-        }
-      }
+      axiosInstance
+        .get<ApiResponse>("users")
+        .then((res) => {
+          setState(res.data);
+        })
+        .catch((err) => {
+          setError(
+            err instanceof Error ? err.message : "An unknown error occurred"
+          );
+        });
     };
     fetchData();
   }, [state]);
@@ -50,7 +50,12 @@ export default function Home() {
   };
 
   if (error) return <div>Error:{error}</div>;
-  if (!state) return <div>Loading...</div>;
+  if (!state)
+    return (
+      <div className="h-screen w-screen z-50 bg-slate-200/75 flex justify-center items-center font-bold text-xl">
+        Loading...
+      </div>
+    );
 
   return (
     <div className="wraps flex-col">

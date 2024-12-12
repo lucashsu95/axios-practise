@@ -11,17 +11,17 @@ export default function Sec1() {
   const [data, setData] = useState<ApiResponse[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get(
-          "https://hp-api.onrender.com/api/spells"
-        );
-        setData(response.data);
-      } catch (err: unknown) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred"
-        );
-      }
+    const fetchData = () => {
+      axiosInstance
+        .get("https://hp-api.onrender.com/api/spells")
+        .then((response) => {
+          setData(response.data);
+        })
+        .catch((err) => {
+          setError(
+            err instanceof Error ? err.message : "An unknown error occurred"
+          );
+        });
     };
     fetchData();
   }, []);
@@ -33,6 +33,7 @@ export default function Sec1() {
         Loading...
       </div>
     );
+
   return (
     <>
       <table className="border border-slate-600 m-5">

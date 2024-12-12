@@ -38,7 +38,12 @@ const UserPage = () => {
     fetchData();
   }, [id]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="h-screen w-screen z-50 bg-slate-200/75 flex justify-center items-center font-bold text-xl">
+        Loading...
+      </div>
+    );
 
   if (!formData) return <div>User not found</div>;
 
