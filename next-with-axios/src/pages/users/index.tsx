@@ -3,13 +3,15 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/button";
 
+interface User{
+  id: number;
+  name: string;
+  email: string;
+}
+
 interface ApiResponse {
   success: boolean;
-  data: {
-    id: number;
-    name: string;
-    email: string;
-  }[];
+  data: User[];
   message: string;
 }
 
