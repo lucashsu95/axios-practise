@@ -1,43 +1,57 @@
-import { GetServerSideProps } from "next";
 import axiosInstance from "@/lib/axios";
 import Link from "next/link";
 import Button from "@/components/ui/button";
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 
-interface User {
+interface FormData {
   id: number;
   name: string;
   email: string;
 }
 
-interface ApiResponse {
-  success: boolean;
-  data: User;
-  message: string;
-}
-
-interface UserPageProps {
-  req: ApiResponse;
-}
-
-const UserPage = ({ req }: UserPageProps) => {
-  const user = req.data;
+const UserPage = () => {
   const router = useRouter();
+  const { id } = router.query;
 
-  const [formData, setFormData] = useState<User | null>({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-  });
+  const [formData, setFormData] = useState<FormData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!formData) return <div>Loading...</div>;
+  useEffect(() => {
+    if (!id) return;
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const fetchData = async () => {
+      try {
+        const res = await axiosInstance.get(`users/${id}`);
+        setFormData({
+          id: res.data.id,
+          name: res.data.name,
+          email: res.data.email,
+        });
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  if (loading) return <div>Loading...</div>;
+
+  if (!formData) return <div>User not found</div>;
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    axiosInstance.put(`users/${user.id}`, formData);
-    router.push("/users");
+    try {
+      await axiosInstance.put(`users/${formData.id}`, formData);
+      router.push("/users");
+    } catch (error) {
+      console.error("Failed to update user:", error);
+    }
   };
+
   return (
     <div className="wraps">
       <form
@@ -57,9 +71,7 @@ const UserPage = ({ req }: UserPageProps) => {
               className="input"
               value={formData.name}
               onChange={(e) =>
-                setFormData((prev) =>
-                  prev ? { ...prev, name: e.target.value } : prev
-                )
+                setFormData((prev) => ({ ...prev!, name: e.target.value }))
               }
             />
           </p>
@@ -71,9 +83,7 @@ const UserPage = ({ req }: UserPageProps) => {
               className="input"
               value={formData.email}
               onChange={(e) =>
-                setFormData((prev) =>
-                  prev ? { ...prev, email: e.target.value } : prev
-                )
+                setFormData((prev) => ({ ...prev!, email: e.target.value }))
               }
             />
           </p>
@@ -82,18 +92,6 @@ const UserPage = ({ req }: UserPageProps) => {
       </form>
     </div>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.params!;
-  const res = await axiosInstance.get<User>(`users/${id}`);
-  const req = res.data;
-
-  return {
-    props: {
-      req,
-    },
-  };
 };
 
 export default UserPage;
