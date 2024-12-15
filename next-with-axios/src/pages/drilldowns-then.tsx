@@ -15,22 +15,17 @@ export default function Sec2() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = () => {
-      axiosInstance
-        .get(
-          "https://datausa.io/api/data?drilldowns=Nation&measures=Population"
-        )
-        .then((response) => {
-          console.log(response.data);
-          setData(response.data.data);
-        })
-        .catch((err) => {
-          setError(
-            err instanceof Error ? err.message : "An unknown error occurred"
-          );
-        });
-    };
-    fetchData();
+    axiosInstance
+      .get("https://datausa.io/api/data?drilldowns=Nation&measures=Population")
+      .then((response) => {
+        console.log(response.data);
+        setData(response.data.data);
+      })
+      .catch((err) => {
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
+      });
   }, []);
 
   if (error) return <div>Error: {error}</div>;

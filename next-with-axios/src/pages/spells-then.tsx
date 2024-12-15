@@ -11,19 +11,16 @@ export default function Sec1() {
   const [data, setData] = useState<ApiResponse[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const fetchData = () => {
-      axiosInstance
-        .get("https://hp-api.onrender.com/api/spells")
-        .then((response) => {
-          setData(response.data);
-        })
-        .catch((err) => {
-          setError(
-            err instanceof Error ? err.message : "An unknown error occurred"
-          );
-        });
-    };
-    fetchData();
+    axiosInstance
+      .get("https://hp-api.onrender.com/api/spells")
+      .then((response) => {
+        setData(response.data);
+      })
+      .catch((err) => {
+        setError(
+          err instanceof Error ? err.message : "An unknown error occurred"
+        );
+      });
   }, []);
 
   if (error) return <div>Error: {error}</div>;

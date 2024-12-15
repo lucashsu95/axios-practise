@@ -3,6 +3,7 @@ import Link from "next/link";
 import Button from "@/components/ui/button";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/router";
+import { fail } from "@/lib/ApiResponse";
 
 interface UserForm {
   name: string;
@@ -10,12 +11,24 @@ interface UserForm {
 }
 
 const UserPage = () => {
-  const router = useRouter();
-
   const [formData, setFormData] = useState<UserForm | null>({
     name: "",
     email: "",
   });
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    axiosInstance
+      .post(`users`, formData)
+      .then(() => {
+        router.push("/users");
+      })
+      .catch((err) => {
+        setError(fail(err));
+      });
+  };
 
   if (!formData)
     return (
@@ -24,11 +37,7 @@ const UserPage = () => {
       </div>
     );
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    axiosInstance.post(`users`, formData);
-    router.push("/users");
-  };
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="wraps">

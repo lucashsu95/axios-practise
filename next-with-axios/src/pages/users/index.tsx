@@ -2,6 +2,7 @@ import axiosInstance from "@/lib/axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/button";
+import { fail } from "@/lib/ApiResponse";
 
 interface User {
   id: number;
@@ -20,33 +21,32 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      axiosInstance
-        .get<ApiResponse>("users")
-        .then((res) => {
-          setState(res.data);
-        })
-        .catch((err) => {
-          setError(
-            err instanceof Error ? err.message : "An unknown error occurred"
-          );
-        });
-    };
-    fetchData();
-  }, [state]);
+    axiosInstance
+      .get<ApiResponse>("users")
+      .then((res) => {
+        setState(res.data);
+      })
+      .catch((err) => {
+        setError(fail(err));
+      });
+  }, []);
 
-  const handleDelete = async (id: number) => {
-    try {
-      await axiosInstance.delete(`users/${id}`);
-      const res = await axiosInstance.get<ApiResponse>("users");
-      setState(res.data);
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("An unknown error occurred");
-      }
-    }
+  const handleDelete = (id: number) => {
+    if (!confirm("確定要刪除嗎?")) return;
+
+    axiosInstance
+      .delete(`users/${id}`)
+      .then(() => {
+        alert("刪除成功");
+        setState((prev) =>
+          prev
+            ? { ...prev, data: prev.data.filter((user) => user.id !== id) }
+            : null
+        );
+      })
+      .catch((err) => {
+        setError(fail(err));
+      });
   };
 
   if (error) return <div>Error:{error}</div>;

@@ -3,6 +3,7 @@ import Link from "next/link";
 import Button from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { fail } from "@/lib/ApiResponse";
 
 interface FormData {
   id: number;
@@ -16,27 +17,39 @@ const UserPage = () => {
 
   const [formData, setFormData] = useState<FormData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
 
-    const fetchData = async () => {
-      try {
-        const res = await axiosInstance.get(`users/${id}`);
-        setFormData({
-          id: res.data.id,
-          name: res.data.name,
-          email: res.data.email,
-        });
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    axiosInstance
+      .get(`users/${id}`)
+      .then((res) => {
+        const { id, name, email } = res.data.data;
+        setFormData({ id, name, email });
+      })
+      .catch((err) => {
+        setError(fail(err));
+      });
 
-    fetchData();
+    setLoading(false);
   }, [id]);
+
+  if (!formData) return <div>User not found</div>;
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    axiosInstance
+      .put(`users/${formData.id}`, formData)
+      .then(() => {
+        alert("編輯成功");
+        router.push("/users");
+      })
+      .catch((err) => {
+        setError(fail(err));
+      });
+  };
 
   if (loading)
     return (
@@ -45,17 +58,7 @@ const UserPage = () => {
       </div>
     );
 
-  if (!formData) return <div>User not found</div>;
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      await axiosInstance.put(`users/${formData.id}`, formData);
-      router.push("/users");
-    } catch (error) {
-      console.error("Failed to update user:", error);
-    }
-  };
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="wraps">
